@@ -340,7 +340,45 @@ function smartInvestAnalyze(a) {
     risks
   };
 }
+// SmartInvest 投資分析模組
+function getInvestmentAnalysis(asset) {
+  const price = Number(asset.price);
+  const eps = Number(asset.eps);
+  const pe = Number(asset.pe);
 
+  const risks = [];
+  const reasons = [];
+
+  if (!Number.isFinite(price) || price <= 0) {
+    return {
+      confidence: "低",
+      conclusion: "缺少有效股價資料",
+      risks: ["請先取得最新且可驗證的股價"]
+    };
+  }
+
+  if (!Number.isFinite(eps) || eps <= 0) {
+    risks.push("EPS 缺失或非正值，無法可靠估算本益比");
+  }
+
+  if (!Number.isFinite(pe) || pe <= 0) {
+    risks.push("本益比資料缺失或無效");
+  }
+
+  if (Number.isFinite(eps) && eps > 0) {
+    reasons.push("可進一步使用 EPS 評估獲利與估值");
+  }
+
+  return {
+    price,
+    eps: Number.isFinite(eps) ? eps : null,
+    pe: Number.isFinite(pe) ? pe : null,
+    confidence: risks.length === 0 ? "待驗證" : "低",
+    conclusion: "請結合最新財報、合理價與市場趨勢判斷",
+    reasons,
+    risks
+  };
+}
 </script>
 
 </body>
