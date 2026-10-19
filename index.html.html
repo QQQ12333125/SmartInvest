@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>SmartInvest｜投資研究分析</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--line:#26344f;--text:#edf3ff;--muted:#9baac5;--accent:#71a7ff;--green:#47d7a0;--red:#ff7c8d;--yellow:#f4c96b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#14203b 0%,var(--bg) 58%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;line-height:1.6}
+a{color:var(--accent)}button,input,select{font:inherit}button{cursor:pointer}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+header{padding:26px 0 18px;border-bottom:1px solid #26344f}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.brand{font-size:24px;font-weight:800;letter-spacing:.3px}.brand span{color:var(--accent)}.sub{font-size:13px;color:var(--muted)}.tag{border:1px solid #3b4b6a;color:#b8cae8;padding:6px 10px;border-radius:999px;font-size:12px}
+.hero{padding:30px 0 18px}.hero h1{font-size:clamp(28px,4vw,42px);line-height:1.2;margin:0 0 12px}.hero p{color:var(--muted);max-width:760px;margin:0}
+.notice{margin:16px 0;padding:13px 15px;background:#282315;border:1px solid #62512a;color:#f5dfa2;border-radius:12px;font-size:13px}
+.quote-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#10182a;border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin:14px 0}.quote-status{font-size:12px;color:var(--muted)}.btn{border:1px solid #3a5278;border-radius:10px;background:#1a2a46;color:#dbe8ff;padding:9px 12px;font-weight:650}.btn.primary{background:#6ea3ff;color:#081326;border-color:#6ea3ff}.btn:disabled{opacity:.55;cursor:wait}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.metric,.panel,.asset-card{background:linear-gradient(150deg,#151f35,#101729);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 30px #0002}.metric{padding:17px}.metric .label{font-size:13px;color:var(--muted)}.metric .value{font-size:24px;font-weight:750;margin-top:4px}.metric .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.controls{display:grid;grid-template-columns:1fr 180px 160px;gap:10px;margin:24px 0 14px}.controls input,.controls select{width:100%;background:#10182a;color:var(--text);border:1px solid #354461;border-radius:11px;padding:12px 13px;outline:none}.controls input:focus,.controls select:focus{border-color:var(--accent)}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:22px 0 12px}.section-title h2{font-size:21px;margin:0}.section-title p{font-size:12px;color:var(--muted);margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.asset-card{padding:17px;transition:transform .15s,border-color .15s}.asset-card:hover{transform:translateY(-2px);border-color:#5476ad}.asset-head{display:flex;justify-content:space-between;gap:10px;align-items:start}.symbol{font-size:18px;font-weight:800}.name{font-size:13px;color:var(--muted)}.pill{font-size:11px;border:1px solid #344562;padding:3px 8px;border-radius:999px;color:#c2d2ee;white-space:nowrap}.asset-score{display:flex;align-items:center;gap:12px;margin:16px 0}.score-circle{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;border:4px solid #3a557e;font-weight:800;font-size:17px;flex-shrink:0}.score-title{font-weight:700}.score-desc{font-size:12px;color:var(--muted)}.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.mini{background:#0d1424;border:1px solid #202d45;border-radius:10px;padding:9px}.mini span{display:block;color:var(--muted);font-size:11px}.mini b{font-size:14px;overflow-wrap:anywhere}.change{font-size:12px;font-weight:700;margin-top:3px}.up{color:var(--green)}.down{color:var(--red)}.flat{color:var(--muted)}.card-actions{display:flex;gap:8px;margin-top:13px}.detail{padding:20px;margin:18px 0}.detail-top{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.detail h2{margin:0 0 6px;font-size:24px}.detail .desc{color:var(--muted);margin-top:4px}.detailgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.smallmetric{background:#0d1424;border:1px solid #24324b;border-radius:11px;padding:12px}.smallmetric span{display:block;color:var(--muted);font-size:12px}.smallmetric b{font-size:17px;display:block;margin-top:4px;overflow-wrap:anywhere}.detail h3{font-size:16px;margin:22px 0 8px}.detail ul{padding-left:21px;margin:8px 0}.detail li{margin:5px 0}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}.box{background:#0d1424;border:1px solid #24324b;border-radius:12px;padding:14px}.good{color:var(--green)}.bad{color:var(--red)}.muted{color:var(--muted)}.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #354461;border-radius:14px}
+footer{border-top:1px solid var(--line);padding:22px 0 35px;color:var(--muted);font-size:12px;margin-top:28px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.detailgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.wrap{width:calc(100% - 22px)}.controls{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.metric{padding:13px}.metric .value{font-size:21px}.panel,.detail{padding:15px}.hero{padding-top:23px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div><div class="brand">Smart<span>Invest</span></div><div class="sub">投資研究分析平台｜台股・美股・ETF</div></div><div class="tag">研究工具 · 非投資建議</div></div></header>
+<main class="wrap">
+<section class="hero"><h1>用數據整理投資想法</h1><p>集中查看關注標的、研究評分、估值資料需求與主要風險。股價會嘗試自動更新；若資料來源暫時無法連線，會清楚標示狀態。</p></section>
+<div class="notice">行情說明：股價由 Yahoo Finance 非官方圖表端點取得，透過第三方跨網域代理讀取；資料可能延遲、暫時無法取得或因服務變更而失效。請勿將此頁報價視為交易所即時報價，交易前請向券商或官方來源再次確認。</div>
+<div class="quote-bar"><div><strong>股價更新</strong><div id="quoteStatus" class="quote-status">尚未更新，正在準備取得行情…</div></div><button id="refreshQuotes" class="btn primary" onclick="refreshQuotes(true)">更新股價</button></div>
+<section class="grid">
+<div class="metric"><div class="label">追蹤標的</div><div class="value" id="totalAssets">—</div><div class="hint">台股、美股與 ETF</div></div>
+<div class="metric"><div class="label">台股標的</div><div class="value" id="twCount">—</div><div class="hint">依目前清單統計</div></div>
+<div class="metric"><div class="label">美股標的</div><div class="value" id="usCount">—</div><div class="hint">依目前清單統計</div></div>
+<div class="metric"><div class="label">行情狀態</div><div class="value" id="quoteCount" style="font-size:19px">更新中</div><div class="hint" id="quoteHint">最新可取得行情</div></div>
+</section>
+<div class="section-title"><div><h2>投資標的</h2><p>輸入名稱、代號或產業即可搜尋</p></div><p id="resultCount"></p></div>
+<div class="controls"><input id="search" type="search" placeholder="搜尋：0050、台積電、Apple、半導體…" aria-label="搜尋投資標的"><select id="market"><option value="all">全部市場</option><option value="tw">台股</option><option value="us">美股</option></select><select id="type"><option value="all">全部類型</option><option value="股票">股票</option><option value="ETF">ETF</option></select></div>
+<div id="cards" class="cards"></div>
+<section id="detail" class="panel detail" aria-live="polite"><div class="muted">請選擇一個投資標的查看研究分析。</div></section>
+</main>
+<footer><div class="wrap">SmartInvest｜本網站提供研究整理與教育用途，不構成個人化投資建議。行情可能延遲或失效，請自行查核官方資料。台股官方資訊：<a href="https://mops.twse.com.tw/" target="_blank" rel="noopener noreferrer">公開資訊觀測站</a>；美股公司申報：<a href="https://www.sec.gov/edgar/search/" target="_blank" rel="noopener noreferrer">SEC EDGAR</a>。</div></footer>
+<script>
+const assets = [
+ {symbol:"0050",yahoo:"0050.TW",name:"元大台灣50",market:"tw",type:"ETF",sector:"台灣大型股",business:"追蹤臺灣市值具代表性的大型上市公司，透過單一 ETF 取得一籃子台股曝險。",period:"長期研究",risk:"市場波動",price:null,eps:null,pe:null,yield:null,capital:"ETF 規模需查最新公告",strength:"分散持有多家大型公司，規則透明，適合研究台灣大型股整體表現。",risknote:"仍承受台股整體市場、產業集中、成分股調整與折溢價風險。",metrics:["追蹤指數與成分股變化","經理費、保管費與總費用","折溢價、成交量與追蹤差異","配息政策及收益來源"],revenue:"ETF 本身不以公司營收與 EPS 評價；應查看指數、持股、費用與基金規模。",meeting:"查看投信官網的基金月報、公開說明書與重大訊息。"},
+ {symbol:"009816",yahoo:"009816.TW",name:"凱基台灣 TOP 50",market:"tw",type:"ETF",sector:"台灣大型股",business:"台灣股票 ETF；投資前應確認最新追蹤指數、成分股、費用及配息規則。",period:"中長期研究",risk:"市場波動",price:null,eps:null,pe:null,yield:null,capital:"請查最新基金資料",strength:"可作為台灣大型股配置工具之一，應與其他同類 ETF 比較追蹤方法與成本。",risknote:"新基金可能有歷史資料較短、規模變化與流動性等考量；實際風險依公開說明書為準。",metrics:["追蹤指數與選股規則","基金規模與成交量","內扣費用與追蹤差異","配息政策及持股集中度"],revenue:"ETF 不適用單一公司 EPS 評價，應比較基金持股與指數表現。",meeting:"請查詢發行投信公告、基金月報與公開說明書。"},
+ {symbol:"2330",yahoo:"2330.TW",name:"台積電",market:"tw",type:"股票",sector:"半導體",business:"提供先進半導體製程與晶圓代工服務，營運表現與全球晶片需求、技術節點及資本支出相關。",period:"中長期研究",risk:"產業與地緣政治",price:null,eps:null,pe:null,yield:null,capital:"請查最新財報",strength:"先進製程能力、客戶合作關係與高資本投入形成競爭門檻。",risknote:"需留意半導體景氣循環、資本支出、客戶需求、地緣政治與匯率風險。",metrics:["季度營收及年增率","毛利率與營業利益率","先進製程需求與產能利用率","資本支出及自由現金流","最新法說會展望"],revenue:"請以公司最新月營收、季度財報及法說會資料核對；此頁未載入即時財務數值。",meeting:"查看台積電投資人關係網站與公開資訊觀測站最新公告。"},
+ {symbol:"2317",yahoo:"2317.TW",name:"鴻海",market:"tw",type:"股票",sector:"電子製造",business:"電子製造服務與科技產品供應鏈企業，營運與消費電子、伺服器及新業務需求相關。",period:"中長期研究",risk:"景氣與客戶集中",price:null,eps:null,pe:null,yield:null,capital:"請查最新財報",strength:"具全球製造與供應鏈管理規模，產品與客戶組合持續變化。",risknote:"需留意終端需求、毛利率、客戶集中、匯率與新事業投資回收。",metrics:["月營收與產品組合","營業利益率","伺服器相關業務成長","存貨與營運現金流","資本支出及新業務獲利"],revenue:"請以公司最新月營收與季度財報核對。",meeting:"查看公司投資人關係頁面及公開資訊觀測站。"},
+ {symbol:"AAPL",yahoo:"AAPL",name:"Apple",market:"us",type:"股票",sector:"消費電子",business:"設計與銷售消費電子產品、軟體與服務，需同時觀察硬體銷售與服務收入。",period:"中長期研究",risk:"產品週期與監管",price:null,eps:null,pe:null,yield:null,capital:"請查最新 10-K / 10-Q",strength:"品牌、軟硬體整合與生態系有助於客戶留存及服務變現。",risknote:"需留意產品更新週期、全球供應鏈、監管、匯率與市場競爭。",metrics:["產品與服務收入成長","毛利率及營業利益率","活躍裝置與服務趨勢","自由現金流與回購","監管及供應鏈風險"],revenue:"請以最新季度財報、10-Q/10-K 與公司公告核對。",meeting:"查看 Apple Investor Relations 與 SEC EDGAR。"},
+ {symbol:"MSFT",yahoo:"MSFT",name:"Microsoft",market:"us",type:"股票",sector:"軟體與雲端",business:"提供企業軟體、雲端平台、訂閱服務與 AI 相關產品。",period:"中長期研究",risk:"估值與競爭",price:null,eps:null,pe:null,yield:null,capital:"請查最新 10-K / 10-Q",strength:"企業軟體與雲端業務具規模，訂閱模式帶來持續性收入。",risknote:"需留意雲端競爭、AI 基礎設施支出、監管與高估值風險。",metrics:["Azure 與雲端成長","商業雲端毛利率","AI 資本支出與回收","自由現金流","監管與競爭態勢"],revenue:"請以最新季度財報與公司公告核對。",meeting:"查看 Microsoft Investor Relations 與 SEC EDGAR。"},
+ {symbol:"NVDA",yahoo:"NVDA",name:"NVIDIA",market:"us",type:"股票",sector:"AI 半導體",business:"提供 GPU、加速運算平台與相關軟硬體，需求與資料中心及 AI 投資密切相關。",period:"中長期研究",risk:"景氣循環與估值",price:null,eps:null,pe:null,yield:null,capital:"請查最新 10-K / 10-Q",strength:"GPU 與軟體生態系在加速運算市場具重要地位。",risknote:"需留意客戶資本支出週期、競爭、出口限制、供應鏈與估值波動。",metrics:["資料中心營收成長","毛利率與產品組合","主要客戶資本支出","庫存與供應能力","出口限制及競爭"],revenue:"請以最新季度財報與公司公告核對。",meeting:"查看 NVIDIA Investor Relations 與 SEC EDGAR。"},
+ {symbol:"VOO",yahoo:"VOO",name:"Vanguard S&P 500 ETF",market:"us",type:"ETF",sector:"美國大型股",business:"追蹤 S&P 500 指數，提供美國大型上市公司分散曝險。",period:"長期研究",risk:"市場波動",price:null,eps:null,pe:null,yield:null,capital:"請查最新基金月報",strength:"涵蓋多個產業的大型美股公司，費用與追蹤資訊公開。",risknote:"仍承受美股整體下跌、前十大持股集中、美元匯率及市場估值風險。",metrics:["費用率與追蹤差異","前十大持股集中度","基金規模與流動性","指數本益比與獲利成長","美元匯率影響"],revenue:"ETF 不適用單一公司營收與 EPS 評價；應查看基金持股、指數與費用。",meeting:"查看 Vanguard 官方基金頁面與 S&P 500 指數資料。"}
+];
+const $=id=>document.getElementById(id);
+let selectedSymbol="0050",lastUpdated=null,isRefreshing=false;
+function safeNumber(v){if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null}
+function money(v){const n=safeNumber(v);return n===null?"尚無資料":n.toLocaleString("zh-TW",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function changeText(a){if(a.changePercent===null||a.changePercent===undefined)return '<span class="change flat">尚無漲跌資料</span>';const cls=a.changePercent>0?"up":a.changePercent<0?"down":"flat";const sign=a.changePercent>0?"+":"";return `<span class="change ${cls}">${sign}${a.changePercent.toFixed(2)}%（${sign}${money(a.change)}）</span>`}
+function smartInvestAnalyze(a){
+ const reasons=[],risks=[];
+ if(a.price===null||a.price<=0)risks.push("尚未取得可驗證的最新可用行情，無法判斷目前價格。");
+ else reasons.push("已取得一筆行情來源回傳的最新可用價格；請留意報價可能延遲。");
+ if(a.type==="ETF"){reasons.push("ETF 應優先比較追蹤指數、持股分散、費用與追蹤差異。");risks.push("ETF 仍會受到市場波動、持股集中與折溢價影響。");}
+ else {if(a.eps!==null&&a.eps>0)reasons.push("已有正值 EPS，可進一步與歷史獲利、同業及預估成長比較。");else risks.push("缺少有效 EPS，無法以本益比可靠評估獲利估值。");}
+ if(!reasons.length)reasons.push("先補齊官方財報、最新價格及可比較的估值資料，再形成研究結論。");
+ const score=Math.min(100,Math.max(0,35+reasons.length*12-risks.length*8));
+ return {score,confidence:risks.length>=2?"低（資料不足）":risks.length===1?"中低（需驗證）":"待驗證",conclusion:risks.length>=2?"目前資料不足，不宜單憑本頁做買賣決策。":"可進一步研究，但仍須核對官方資料與投資風險。",reasons,risks};
+}
+function scoreLabel(s){return s>=75?"研究條件較完整":s>=55?"仍需補充資料":"資料不足"}
+function card(a){
+ const an=smartInvestAnalyze(a);
+ return `<article class="asset-card"><div class="asset-head"><div><div class="symbol">${a.symbol}</div><div class="name">${a.name}</div></div><span class="pill">${a.market==="tw"?"台股":"美股"} · ${a.type}</span></div><div class="asset-score"><div class="score-circle">${an.score}</div><div><div class="score-title">${scoreLabel(an.score)}</div><div class="score-desc">${a.sector}｜${an.confidence}</div></div></div><div class="mini-grid"><div class="mini"><span>最新可用價格</span><b>${money(a.price)}</b>${changeText(a)}</div><div class="mini"><span>本益比</span><b>${a.type==="ETF"?"不適用":money(a.pe)}</b></div></div><div class="card-actions"><button class="btn primary" onclick="openAsset('${a.symbol}')">查看分析</button></div></article>`;
+}
+function render(){
+ const q=$("search").value.trim().toLowerCase(),market=$("market").value,type=$("type").value;
+ const list=assets.filter(a=>(market==="all"||a.market===market)&&(type==="all"||a.type===type)&&[a.symbol,a.name,a.sector,a.business,a.type].join(" ").toLowerCase().includes(q));
+ $("totalAssets").textContent=assets.length;$("twCount").textContent=assets.filter(a=>a.market==="tw").length;$("usCount").textContent=assets.filter(a=>a.market==="us").length;
+ $("resultCount").textContent=`找到 ${list.length} 個標的`;
+ $("cards").innerHTML=list.length?list.map(card).join(""):`<div class="empty" style="grid-column:1/-1">找不到符合條件的標的，請換一個關鍵字或篩選條件。</div>`;
+ if(!list.some(a=>a.symbol===selectedSymbol)){if(list.length)selectedSymbol=list[0].symbol;else{$("detail").innerHTML='<div class="muted">目前沒有符合條件的標的。</div>';return;}}
+ showDetail(assets.find(a=>a.symbol===selectedSymbol));
+}
+function openAsset(symbol){selectedSymbol=symbol;showDetail(assets.find(a=>a.symbol===symbol));$("detail").scrollIntoView({behavior:"smooth",block:"start"});}
+function showDetail(a){
+ if(!a)return;const an=smartInvestAnalyze(a);
+ const priceTime=a.priceTime?new Date(a.priceTime*1000).toLocaleString("zh-TW"):"尚無行情時間";
+ $("detail").innerHTML=`<div class="detail-top"><div><div class="muted">${a.market==="tw"?"台股":"美股"} / ${a.type} / ${a.sector}</div><h2>${a.name}（${a.symbol}）</h2><div class="desc">${a.business}</div></div><span class="pill">研究分析</span></div>
+ <div class="detailgrid"><div class="smallmetric"><span>研究檢核分數</span><b>${an.score}/100</b></div><div class="smallmetric"><span>資料可信度</span><b>${an.confidence}</b></div><div class="smallmetric"><span>最新可用價格</span><b>${money(a.price)}</b>${changeText(a)}</div><div class="smallmetric"><span>行情時間</span><b style="font-size:12px">${priceTime}</b></div><div class="smallmetric"><span>本益比</span><b>${a.type==="ETF"?"不適用單一公司 PE":money(a.pe)}</b></div><div class="smallmetric"><span>每股盈餘 EPS</span><b>${a.type==="ETF"?"不適用":money(a.eps)}</b></div><div class="smallmetric"><span>研究期限</span><b>${a.period}</b></div><div class="smallmetric"><span>主要風險</span><b>${a.risk}</b></div></div>
+ <div class="box"><h3 style="margin-top:0">研究結論</h3><p>${an.conclusion}</p><p class="muted">研究分數是資料檢核與研究提示，不是預測報酬、買賣訊號或保證。</p></div>
+ <div class="two-col"><div class="box"><h3 style="margin-top:0">研究觀察</h3><ul>${an.reasons.map(x=>`<li class="good">${x}</li>`).join("")}</ul><h3>競爭優勢</h3><p>${a.strength}</p></div><div class="box"><h3 style="margin-top:0">需要注意的風險</h3><ul>${an.risks.map(x=>`<li class="bad">${x}</li>`).join("")}</ul><p class="bad">${a.risknote}</p></div></div>
+ <h3>應追蹤的關鍵指標</h3><ul>${a.metrics.map(x=>`<li>${x}</li>`).join("")}</ul><h3>營收與財務</h3><p>${a.revenue}</p><h3>法說會與重大公告</h3><p>${a.meeting}</p>
+ <div class="notice">行情透過 Yahoo Finance 非官方端點與第三方代理取得，可能延遲、暫時失效或變更。EPS、本益比、配息率等財務數據尚未連接，不會以虛構數字填充。</div>
+ <p class="muted">官方資料入口：<a href="https://mops.twse.com.tw/" target="_blank" rel="noopener noreferrer">台灣公開資訊觀測站</a> · <a href="https://www.sec.gov/edgar/search/" target="_blank" rel="noopener noreferrer">美國 SEC EDGAR</a></p>`;
+}
+async function fetchQuote(a){
+ const url=`https://proxy.cors.dev/https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(a.yahoo)}?range=1d&interval=1d&_=`;
+ const response=await fetch(url+Date.now(),{method:"GET",cache:"no-store"});
+ if(!response.ok)throw new Error("行情服務回應 "+response.status);
+ const data=await response.json(),result=data&&data.chart&&data.chart.result&&data.chart.result[0];
+ if(!result||!result.meta)throw new Error("沒有可用行情資料");
+ const meta=result.meta;
+ const price=safeNumber(meta.regularMarketPrice);
+ const previous=safeNumber(meta.chartPreviousClose??meta.previousClose??meta.regularMarketPreviousClose);
+ if(price===null)throw new Error("來源沒有回傳價格");
+ a.price=price;a.previousClose=previous;a.change=previous===null?null:price-previous;
+ a.changePercent=previous===null||previous===0?null:(price-previous)/previous*100;
+ a.priceTime=safeNumber(meta.regularMarketTime)||Math.floor(Date.now()/1000);
+ a.quoteCurrency=meta.currency|| (a.market==="tw"?"TWD":"USD");
+ a.quoteError=null;return a;
+}
+async function refreshQuotes(manual=false){
+ if(isRefreshing)return;isRefreshing=true;const button=$("refreshQuotes");button.disabled=true;button.textContent="更新中…";$("quoteStatus").textContent="正在向行情來源取得最新可用價格…";
+ let ok=0,failed=0;
+ try{
+  const results=await Promise.allSettled(assets.map(a=>fetchQuote(a)));
+  results.forEach((r,i)=>{if(r.status==="fulfilled")ok++;else{failed++;assets[i].quoteError=r.reason?.message||"取得失敗";}});
+  lastUpdated=new Date();
+  $("quoteStatus").textContent=`更新完成：${ok} 檔成功、${failed} 檔未取得｜頁面更新時間 ${lastUpdated.toLocaleString("zh-TW")}`;
+  $("quoteCount").textContent=`${ok}/${assets.length}`;
+  $("quoteHint").textContent=failed?`${failed} 檔無法取得，可能是代號或來源限制`:"已取得行情回應";
+ }catch(e){$("quoteStatus").textContent="更新失敗："+(e.message||"請稍後再試");$("quoteCount").textContent="連線失敗";$("quoteHint").textContent="請稍後手動重試";}
+ finally{isRefreshing=false;button.disabled=false;button.textContent="更新股價";render();}
+}
+$("search").addEventListener("input",render);$("market").addEventListener("change",render);$("type").addEventListener("change",render);
+render();refreshQuotes(false);setInterval(()=>refreshQuotes(false),5*60*1000);
+</script>
+</body>
+</html>
