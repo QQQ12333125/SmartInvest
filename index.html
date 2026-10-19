@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#101827">
+
+<title>SmartInvest｜智慧投資研究中心</title>
+
+<style>
+
+:root{--bg:#0b1120;--panel:#141e30;--line:#28364b;--text:#edf3ff;--muted:#9baac0;--green:#39d98a;--red:#ff737e;--blue:#75aaff}
+
+*{box-sizing:border-box}
+
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
+
+header{padding:22px 5%;background:#111a2a;border-bottom:1px solid var(--line)}
+
+.brand{font-size:25px;font-weight:800;letter-spacing:.3px}.brand span{color:var(--green)}
+
+header p{color:var(--muted);margin:4px 0}
+
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+button,select,input{font:inherit}
+
+button,select{cursor:pointer}
+
+nav button,.tab,.filter{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:10px 14px;border-radius:10px}
+
+nav button.active,.tab.active{background:#214c41;border-color:var(--green)}
+
+main{max-width:1200px;margin:auto;padding:24px 5% 60px}
+
+h1{font-size:27px;margin:0 0 6px}h2{font-size:20px;margin:0 0 14px}h3{font-size:16px;margin:0 0 8px}
+
+.muted{color:var(--muted);font-size:13px}
+
+.notice{padding:13px 15px;border:1px solid #715e35;background:#302719;border-radius:12px;color:#f8d99a;margin:16px 0}
+
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:17px}
+
+.metric{font-size:25px;font-weight:800}.green{color:var(--green)}.red{color:var(--red)}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+
+input,select{background:#0c1423;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px;min-width:0}
+
+input{flex:1;min-width:180px}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+
+table{width:100%;border-collapse:collapse;min-width:650px}
+
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:14px}
+
+th{color:var(--muted);background:#101827}
+
+tbody tr{cursor:pointer}tbody tr:hover{background:#202c40}
+
+.tag{display:inline-block;border-radius:6px;padding:3px 7px;background:#25344b;font-size:12px}
+
+button.primary{background:var(--green);color:#07180f;border:0;font-weight:800;padding:11px 16px;border-radius:10px}
+
+button:focus,input:focus,select:focus{outline:2px solid var(--blue);outline-offset:2px}
+
+.detail{margin-top:18px}
+
+.detailgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+
+.smallmetric{padding:12px;background:#0e1727;border-radius:10px;border:1px solid var(--line)}
+
+.smallmetric b{display:block;font-size:18px}
+
+ul{padding-left:20px}
+
+footer{border-top:1px solid var(--line);padding:22px 5%;color:var(--muted);font-size:12px}
+
+@media(max-width:700px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.detailgrid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding-top:18px}.metric{font-size:21px}header{padding:18px 5%}}
+
+@media(max-width:380px){.detailgrid{grid-template-columns:1fr}.cards{gap:8px}.card{padding:12px}}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="brand">Smart<span>Invest</span> 📈</div>
+
+  <p>台股・美股・ETF 智慧投資研究中心</p>
+
+  <nav>
+
+    <button class="active" data-page="home">投資總覽</button>
+
+    <button data-page="tw">台股 TOP 10</button>
+
+    <button data-page="us">美股 TOP 10</button>
+
+    <button data-page="etf">ETF 專區</button>
+
+  </nav>
+
+</header>
+
+<main>
+
+  <div id="app"></div>
+
+</main>
+
+<footer>SmartInvest 投資研究工具｜示範資料僅供介面展示，不代表即時行情或投資建議。投資前請查閱官方公告與最新財報。</footer>
+
+<script>
+
+const assets=[
+
+{symbol:"0050",name:"元大台灣50",market:"tw",type:"ETF",sector:"台灣大型股指數",business:"追蹤臺灣市值前50大上市公司，透過單一ETF參與台股大型企業。",risk:"中高",score:86,pe:"不適用",yield:"依最新公告",capital:"基金規模需查最新資料",strength:"分散投資、費用與追蹤誤差需比較",risknote:"仍受台股及大型電子股集中度影響",period:"長期",metrics:["追蹤指數報酬","總費用率","追蹤誤差"],revenue:"ETF不適用公司營收",meeting:"基金公告與指數調整"},
+
+{symbol:"006208",name:"富邦台50",market:"tw",type:"ETF",sector:"台灣大型股指數",business:"追蹤臺灣50指數，適合比較長期持有成本及追蹤表現。",risk:"中高",score:84,pe:"不適用",yield:"依最新公告",capital:"基金規模需查最新資料",strength:"可用於台股核心配置",risknote:"市場下跌時仍會出現明顯回撤",period:"長期",metrics:["總費用率","追蹤誤差","折溢價"],revenue:"ETF不適用公司營收",meeting:"基金公告"},
+
+{symbol:"2330",name:"台積電",market:"tw",type:"股票",sector:"半導體晶圓代工",business:"提供先進製程及晶圓製造服務，是全球重要的專業晶圓代工企業。",risk:"中高",score:91,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新年報",strength:"先進製程、規模與技術門檻",risknote:"資本支出、地緣政治、景氣與客戶集中",period:"中長期",metrics:["月營收年增率","毛利率","EPS"],revenue:"請查最新月營收及季報",meeting:"請查公司投資人關係網站"},
+
+{symbol:"2317",name:"鴻海",market:"tw",type:"股票",sector:"電子製造服務",business:"提供電子產品製造、伺服器與多元智慧製造服務。",risk:"中高",score:82,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新年報",strength:"製造規模與全球供應鏈",risknote:"產業競爭、毛利率與客戶需求變化",period:"中長期",metrics:["營收成長","營業利益率","自由現金流"],revenue:"請查最新月營收及季報",meeting:"請查公司公告"},
+
+{symbol:"2454",name:"聯發科",market:"tw",type:"股票",sector:"IC設計",business:"開發行動通訊、智慧裝置與其他電子產品使用的晶片。",risk:"中高",score:83,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新年報",strength:"晶片設計能力與產品布局",risknote:"半導體循環、競爭及產品組合變化",period:"中長期",metrics:["毛利率","EPS","研發投入"],revenue:"請查最新月營收及季報",meeting:"請查公司公告"},
+
+{symbol:"2308",name:"台達電",market:"tw",type:"股票",sector:"電源與能源管理",business:"提供電源管理、散熱、自動化與能源相關解決方案。",risk:"中",score:80,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新年報",strength:"電源與能源管理技術",risknote:"估值、產業競爭及需求週期",period:"中長期",metrics:["營業利益率","現金流","訂單趨勢"],revenue:"請查最新月營收及季報",meeting:"請查公司公告"},
+
+{symbol:"2881",name:"富邦金",market:"tw",type:"股票",sector:"金融保險",business:"涵蓋銀行、保險及相關金融服務。",risk:"中",score:77,pe:"金融業需搭配其他指標",yield:"依董事會公告",capital:"需查最新年報",strength:"金融服務規模與多元業務",risknote:"利率、投資損益與監理風險",period:"中長期",metrics:["ROE","資本適足率","股利政策"],revenue:"金融業須搭配獲利及資產指標",meeting:"請查公司公告"},
+
+{symbol:"2303",name:"聯電",market:"tw",type:"股票",sector:"半導體晶圓代工",business:"提供成熟製程晶圓代工服務。",risk:"中高",score:74,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新年報",strength:"成熟製程與客戶基礎",risknote:"產能利用率、價格競爭與資本支出",period:"中長期",metrics:["產能利用率","毛利率","現金流"],revenue:"請查最新月營收及季報",meeting:"請查公司公告"},
+
+{symbol:"2412",name:"中華電",market:"tw",type:"股票",sector:"電信服務",business:"提供行動通信、寬頻與企業通訊服務。",risk:"中低",score:76,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新年報",strength:"經常性收入與電信服務需求",risknote:"成長速度、資本支出及競爭",period:"中長期",metrics:["自由現金流","股利覆蓋","營業利益率"],revenue:"請查最新月營收及季報",meeting:"請查公司公告"},
+
+{symbol:"00878",name:"國泰永續高股息",market:"tw",type:"ETF",sector:"台股高股息",business:"依基金公開說明書所列指數規則選股，追求股息與指數報酬。",risk:"中高",score:78,pe:"不適用",yield:"配息不保證",capital:"基金規模需查最新資料",strength:"有股息策略與規則化選股",risknote:"配息可能變動，股息不等於總報酬",period:"中長期",metrics:["總報酬","總費用率","配息來源"],revenue:"ETF不適用公司營收",meeting:"基金公告與成分股調整"},
+
+{symbol:"VTI",name:"Vanguard Total Stock Market ETF",market:"us",type:"ETF",sector:"美國全市場",business:"涵蓋廣泛美國股票市場，提供大型、中型及小型公司曝險。",risk:"中高",score:89,pe:"依最新持股與市場資料",yield:"依基金公告",capital:"基金淨資產需查最新資料",strength:"市場分散程度廣",risknote:"美國市場整體下跌與匯率風險",period:"長期",metrics:["費用率","追蹤誤差","持股集中度"],revenue:"ETF不適用公司營收",meeting:"基金官方公告"},
+
+{symbol:"VOO",name:"Vanguard S&P 500 ETF",market:"us",type:"ETF",sector:"S&P 500指數",business:"追蹤美國大型企業組成的S&P 500指數。",risk:"中高",score:88,pe:"依最新持股與市場資料",yield:"依基金公告",capital:"基金淨資產需查最新資料",strength:"大型企業分散配置",risknote:"大型科技股權重集中與市場回撤",period:"長期",metrics:["費用率","追蹤誤差","產業集中度"],revenue:"ETF不適用公司營收",meeting:"基金官方公告"},
+
+{symbol:"QQQ",name:"Invesco QQQ Trust",market:"us",type:"ETF",sector:"NASDAQ-100",business:"追蹤NASDAQ-100指數，偏重大型成長及科技相關公司。",risk:"高",score:82,pe:"依最新持股與市場資料",yield:"依基金公告",capital:"基金淨資產需查最新資料",strength:"成長型企業曝險",risknote:"科技股集中、估值與波動風險",period:"中長期",metrics:["估值","持股集中度","最大回撤"],revenue:"ETF不適用公司營收",meeting:"基金官方公告"},
+
+{symbol:"AAPL",name:"Apple",market:"us",type:"股票",sector:"消費電子與服務",business:"設計消費電子產品、作業系統與數位服務。",risk:"中",score:85,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新10-K",strength:"品牌、生態系與服務收入",risknote:"產品週期、監管與供應鏈風險",period:"中長期",metrics:["服務收入成長","毛利率","自由現金流"],revenue:"查SEC季度申報與公司財報",meeting:"查公司投資人關係網站"},
+
+{symbol:"MSFT",name:"Microsoft",market:"us",type:"股票",sector:"軟體與雲端",business:"提供企業軟體、雲端服務、作業系統與AI相關產品。",risk:"中",score:90,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新10-K",strength:"企業軟體、雲端與生態系",risknote:"估值、AI投資回報及監管風險",period:"中長期",metrics:["雲端成長","營業利益率","資本支出"],revenue:"查SEC季度申報與公司財報",meeting:"查公司投資人關係網站"},
+
+{symbol:"NVDA",name:"NVIDIA",market:"us",type:"股票",sector:"GPU與AI運算",business:"設計GPU、AI運算平台及相關軟硬體生態系。",risk:"高",score:87,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新10-K",strength:"AI運算平台與軟體生態系",risknote:"估值、競爭、出口限制及客戶資本支出",period:"中長期",metrics:["資料中心收入","毛利率","客戶集中度"],revenue:"查SEC季度申報與公司財報",meeting:"查公司投資人關係網站"},
+
+{symbol:"AMZN",name:"Amazon",market:"us",type:"股票",sector:"電商與雲端",business:"經營電子商務、物流、廣告及AWS雲端服務。",risk:"中高",score:84,pe:"需最新股價與EPS",yield:"通常不以股息為主要特色",capital:"需查最新10-K",strength:"物流、雲端與多元業務",risknote:"資本支出、競爭與營業利益率",period:"中長期",metrics:["AWS成長","營業利益率","自由現金流"],revenue:"查SEC季度申報與公司財報",meeting:"查公司投資人關係網站"},
+
+{symbol:"GOOGL",name:"Alphabet",market:"us",type:"股票",sector:"搜尋、廣告與雲端",business:"經營搜尋、數位廣告、YouTube、Google Cloud及其他科技服務。",risk:"中高",score:84,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新10-K",strength:"搜尋、廣告與雲端業務",risknote:"反壟斷、AI競爭與廣告週期",period:"中長期",metrics:["廣告成長","雲端獲利","自由現金流"],revenue:"查SEC季度申報與公司財報",meeting:"查公司投資人關係網站"},
+
+{symbol:"BRK-B",name:"Berkshire Hathaway B",market:"us",type:"股票",sector:"多元控股",business:"持有保險、能源、鐵路及多種企業與投資資產。",risk:"中",score:81,pe:"需搭配淨資產與營運獲利",yield:"通常不配現金股利",capital:"需查最新10-K",strength:"多元事業與資本配置",risknote:"投資組合、接班與保險損失風險",period:"長期",metrics:["營運獲利","現金部位","淨資產"],revenue:"查SEC季度申報與年報",meeting:"股東會及公司公告"},
+
+{symbol:"COST",name:"Costco",market:"us",type:"股票",sector:"會員制零售",business:"透過會員制倉儲零售模式銷售商品及相關服務。",risk:"中",score:80,pe:"需最新股價與EPS",yield:"依董事會公告",capital:"需查最新10-K",strength:"會員續約與營運效率",risknote:"估值、成本及消費需求變化",period:"中長期",metrics:["同店銷售","會員續約率","毛利率"],revenue:"查SEC季度申報與公司財報",meeting:"查公司投資人關係網站"},
+
+{symbol:"SCHD",name:"Schwab US Dividend Equity ETF",market:"us",type:"ETF",sector:"美國股息股票",business:"依指數規則選擇符合品質與股息條件的美國股票。",risk:"中",score:80,pe:"依最新持股與市場資料",yield:"依基金公告",capital:"基金淨資產需查最新資料",strength:"偏向股息及品質因子",risknote:"產業偏重、股息調整與市場風險",period:"中長期",metrics:["費用率","配息來源","持股集中度"],revenue:"ETF不適用公司營收",meeting:"基金官方公告"}
+
+];
+
+let page="home",market="tw",type="全部",selected="2330",query="";
+
+const app=document.getElementById("app");
+
+const money=n=>n;
+
+function filtered(){
+
+ let list=assets.filter(a=>(market==="all"||a.market===market)&&(type==="全部"||a.type===type));
+
+ if(query)list=list.filter(a=>(a.symbol+" "+a.name+" "+a.sector).toLowerCase().includes(query.toLowerCase()));
+
+ return list.sort((a,b)=>b.score-a.score);
+
+}
+
+function row(a,i){return `<tr onclick="openAsset('${a.symbol}')"><td>${i+1}</td><td><b>${a.symbol}</b><br><span class="muted">${a.name}</span></td><td><span class="tag">${a.type}</span></td><td>${a.sector}</td><td><b>${a.score}</b>/100</td><td>${a.risk}</td></tr>`}
+
+function table(list){return `<div class="tablewrap"><table><thead><tr><th>排名</th><th>代號 / 名稱</th><th>類別</th><th>產業</th><th>研究分數*</th><th>風險</th></tr></thead><tbody>${list.map(row).join("")||'<tr><td colspan="6">沒有符合的標的</td></tr>'}</tbody></table></div><p class="muted">*目前分數為介面示範用的預設排序，不是即時量化評分，不應視為投資排名。</p>`}
+
+function detail(a){
+
+ if(!a)return "";
+
+ return `<section class="panel detail"><div class="muted">${a.market==="tw"?"台股":"美股"} / ${a.type} / ${a.sector}</div><h1>${a.name}（${a.symbol}）</h1><p>${a.business}</p><div class="detailgrid"><div class="smallmetric"><span class="muted">研究示範分數</span><b>${a.score}/100</b></div><div class="smallmetric"><span class="muted">風險程度</span><b>${a.risk}</b></div><div class="smallmetric"><span class="muted">參考投資期限</span><b>${a.period}</b></div><div class="smallmetric"><span class="muted">估值</span><b>${a.pe}</b></div><div class="smallmetric"><span class="muted">股利 / 配息</span><b>${a.yield}</b></div><div class="smallmetric"><span class="muted">資本額 / 基金規模</span><b style="font-size:13px">${a.capital}</b></div></div><h2 style="margin-top:22px">競爭優勢</h2><p>${a.strength}</p><h2>主要風險</h2><p>${a.risknote}</p><h2>應追蹤的關鍵指標</h2><ul>${a.metrics.map(x=>`<li>${x}</li>`).join("")}</ul><h2>營收與財務</h2><p>${a.revenue}</p><h2>法說會與重大公告</h2><p>${a.meeting}</p><div class="notice">此頁尚未連接即時資料。請勿把缺少數值或示範分數當作最新財務資訊；後續版本將加入來源、資料日期與歷史趨勢。</div><p class="muted">官方資料入口：<a href="https://mops.twse.com.tw/" target="_blank" rel="noopener">台灣公開資訊觀測站</a> · <a href="https://www.sec.gov/edgar/search/" target="_blank" rel="noopener">美國 SEC EDGAR</a></p></section>`;
+
+}
+
+function render(){
+
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+
+ if(page==="home"){
+
+ app.innerHTML=`<h1>投資研究總覽</h1><p class="muted">分開研究台股與美股，先篩選，再查看完整分析。</p><div class="notice">資料狀態：目前為示範版，尚未連接即時股價、財報 API 或 AI。分數僅供測試介面。</div><div class="cards"><div class="card"><div class="muted">台股研究標的</div><div class="metric">10 檔</div></div><div class="card"><div class="muted">美股研究標的</div><div class="metric">10 檔</div></div><div class="card"><div class="muted">股票與 ETF</div><div class="metric">分類檢視</div></div><div class="card"><div class="muted">資料更新</div><div class="metric">待串接</div></div></div><div class="panel"><h2>快速開始</h2><p>使用上方選單切換市場，或搜尋股票代號。點選任一標的即可查看研究報告。</p><div class="toolbar"><button class="primary" onclick="go('tw')">查看台股</button><button class="primary" onclick="go('us')">查看美股</button><button class="primary" onclick="go('etf')">ETF 專區</button></div></div>`;
+
+ return;
+
+ }
+
+ if(page==="etf"){market="all";type="ETF"}else if(page==="tw"){market="tw";type=type==="股票"?"股票":"全部"}else if(page==="us"){market="us";type=type==="股票"?"股票":"全部"}
+
+ const list=filtered();
+
+ app.innerHTML=`<h1>${page==="etf"?"ETF 專區":market==="tw"?"台股研究排行榜":"美股研究排行榜"}</h1><p class="muted">依研究示範分數排列；非即時投資建議。</p><div class="toolbar"><input id="search" placeholder="搜尋代號、名稱或產業…" value="${query.replace(/"/g,"&quot;")}"><select id="type"><option ${type==="全部"?"selected":""}>全部</option><option ${type==="股票"?"selected":""}>股票</option><option ${type==="ETF"?"selected":""}>ETF</option></select></div><div class="tabs"><button class="tab ${market==="tw"?"active":""}" onclick="setMarket('tw')">台股</button><button class="tab ${market==="us"?"active":""}" onclick="setMarket('us')">美股</button><button class="tab ${market==="all"?"active":""}" onclick="setMarket('all')">全部市場</button></div>${table(list)}<div id="detail">${detail(assets.find(a=>a.symbol===selected)||list[0])}</div>`;
+
+ document.getElementById("search").addEventListener("input",e=>{query=e.target.value;const pos=e.target.selectionStart;render();const el=document.getElementById("search");el.focus();el.setSelectionRange(pos,pos)});
+
+ document.getElementById("type").addEventListener("change",e=>{type=e.target.value;render()});
+
+}
+
+function go(p){page=p;query="";type="全部";render();window.scrollTo({top:0,behavior:"smooth"})}
+
+function setMarket(m){market=m;page=m==="all"?"etf":m;type="全部";render()}
+
+function openAsset(s){selected=s;const a=assets.find(x=>x.symbol===s);document.getElementById("detail").innerHTML=detail(a);document.getElementById("detail").scrollIntoView({behavior:"smooth",block:"start"})}
+
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+
+render();
+
+</script>
+
+</body>
+
+</html>
