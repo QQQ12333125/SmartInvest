@@ -1,0 +1,30 @@
+name: Refresh market symbol database
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 22 * * 1-5' # weekday schedule, UTC
+  push:
+    paths:
+      - 'scripts/build_universe.py'
+      - '.github/workflows/update-universe.yml'
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build symbol database
+        run: python scripts/build_universe.py
+      - name: Commit refreshed database
+        run: |
+          if git diff --quiet -- universe.json; then
+            echo 'No universe changes.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add universe.json
+            git commit -m 'Refresh full market symbol database'
+            git push
+          fi
