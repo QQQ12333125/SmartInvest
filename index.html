@@ -236,6 +236,111 @@ document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()
 
 render();
 
+
+function smartInvestAnalyze(a) {
+  const num = (...keys) => {
+    for (const k of keys) {
+      const v = Number(a[k]);
+      if (a[k] !== undefined && a[k] !== null &&
+          a[k] !== "" && Number.isFinite(v)) return v;
+    }
+    return null;
+  };
+
+  const price = num("price", "currentPrice", "close");
+  const pe = num("pe", "PER", "per");
+  const roe = num("roe", "ROE");
+  const growth = num("growth", "revenueGrowth");
+  const debt = num("debtRatio", "debt");
+  const dividend = num("dividendYield", "yield");
+  const eps = num("eps", "EPS");
+  const fairValue = num("fairValue", "targetPrice");
+
+  let score = 50;
+  const reasons = [];
+  const risks = [];
+  let available = 0;
+
+  if (roe !== null) {
+    available++;
+    score += roe >= 15 ? 12 : roe >= 10 ? 6 :
+             roe < 0 ? -15 : 0;
+    reasons.push("已納入股東權益報酬率");
+    if (roe < 8) risks.push("獲利效率偏低");
+  }
+
+  if (growth !== null) {
+    available++;
+    score += growth >= 15 ? 12 : growth > 0 ? 5 :
+             growth < 0 ? -12 : 0;
+    reasons.push("已納入成長率");
+    if (growth < 0) risks.push("成長率為負");
+  }
+
+  if (pe !== null && pe > 0) {
+    available++;
+    score += pe <= 15 ? 8 : pe <= 25 ? 3 :
+             pe > 40 ? -10 : 0;
+    reasons.push("已納入本益比");
+    if (pe > 40) risks.push("本益比偏高，須檢查估值");
+  }
+
+  if (debt !== null) {
+    available++;
+    score += debt < 30 ? 5 : debt > 70 ? -10 : 0;
+    reasons.push("已納入負債比率");
+    if (debt > 70) risks.push("負債比率偏高");
+  }
+
+  if (dividend !== null) {
+    available++;
+    if (dividend < 0 || dividend > 15)
+      risks.push("股息殖利率異常，請核對資料");
+    else if (dividend >= 2 && dividend <= 6)
+      score += 3;
+  }
+
+  score = Math.max(0, Math.min(100, score));
+  const confidence = available >= 4 ? "較完整" :
+                     available >= 2 ? "有限" : "不足";
+
+  let conclusion = "資料不足，暫不判斷";
+  if (available >= 2) {
+    conclusion = score >= 75 ? "基本面條件較佳，仍須評估價格" :
+                 score >= 60 ? "中性偏正面，等待更多證據" :
+                 score >= 45 ? "審慎觀察" : "風險偏高，應深入檢查";
+  }
+
+  let valuation = "缺少合理價資料，無法計算安全邊際";
+  let margin = null;
+
+  if (price !== null && price > 0 &&
+      fairValue !== null && fairValue > 0) {
+    margin = (fairValue - price) / fairValue * 100;
+    valuation = margin >= 20 ? "相對合理價有安全邊際" :
+                margin >= 0 ? "低於估計合理價，但安全邊際有限" :
+                "高於估計合理價";
+  } else if (price !== null && price > 0 &&
+             eps !== null && eps > 0 &&
+             pe !== null && pe > 0) {
+    valuation = "已有估值資料，但仍需獨立估算合理價";
+  }
+
+  if (available < 3)
+    risks.push("可用基本面資料不足，評分可信度有限");
+
+  return {
+    score,
+    confidence,
+    conclusion,
+    valuation,
+    margin: margin === null ? null :
+            Math.round(margin * 100) / 100,
+    reasons,
+    risks
+  };
+}
+
 </script>
 
 </body>
