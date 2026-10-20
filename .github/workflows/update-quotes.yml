@@ -1,0 +1,28 @@
+
+name: SmartInvest Background Quote Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * 1-5"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smartinvest-quote-update
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate quote update schedule
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Check update schedule
+        run: |
+          echo "SmartInvest background quote workflow started."
+          echo "UTC time: $(date -u '+%Y-%m-%d %H:%M:%S')"
+          echo "This is a scheduling test only."
+          echo "No market data has been fetched or updated yet."
