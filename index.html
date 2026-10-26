@@ -56,7 +56,7 @@ function normalize(x){
  const market=x.market==='tw'||x.market==='us'?x.market:'us';
  const a={symbol,name:String(x.name||symbol).trim(),market,type:x.type==='ETF'?'ETF':'股票',exchange:x.exchange||'',yahoo:x.yahoo||(market==='tw'?symbol+'.TW':symbol),sector:x.sector||'來源未提供',source:x.source||'定期產生的標的目錄',
  price:null,change:null,changePercent:null,priceTime:null,quoteFetchedAt:null,quoteCurrency:market==='tw'?'TWD':'USD',
- dayOpen:null,dayHigh:null,dayLow:null,previousClose:null,volume:null,averageVolume:null,sixtyDayHigh:null,sixtyDayLow:null,sixtyDayChangePercent:null,sixtyDayStartPrice:null,sixtyDayTradingDays:null,marketCap:null,quoteError:null,quoteStale:false};
+ dayOpen:null,dayHigh:null,dayLow:null,previousClose:null,volume:null,averageVolume:null,sixtyDayHigh:null,sixtyDayLow:null,sixtyDayChangePercent:null,sixtyDayStartPrice:null,sixtyDayTradingDays:null,marketCap:null,quoteError:null,quoteStale:false,quoteHistoricalClose:false};
  const c=readQuoteCache()[quoteKey(a)];
  if(c&&Number.isFinite(Number(c.price))){Object.assign(a,c);a.price=Number(c.price);a.quoteStale=true}
  return a;
@@ -77,6 +77,7 @@ function formatTime(ts){return ts?new Date(Number(ts)*1000).toLocaleString('zh-T
 function quoteAge(ts){if(!ts)return'取得時間未知';const s=Math.max(0,Math.floor(Date.now()/1000-Number(ts)));if(s<60)return'不到 1 分鐘前取得';const m=Math.floor(s/60);if(m<60)return`約 ${m} 分鐘前取得`;const h=Math.floor(m/60);if(h<24)return`約 ${h} 小時前取得`;return`約 ${Math.floor(h/24)} 天前取得`}
 function quoteNote(a){
  const ts=a.quoteFetchedAt||a.priceTime;
+ if(a.quoteHistoricalClose)return `<div class="name" style="margin-top:5px;color:var(--yellow)">● 顯示最近交易日收盤價（非即時）<br>資料時間：${esc(formatTime(a.priceTime||ts))}</div>`;
  if(a.quoteError)return `<div class="name" style="margin-top:5px;color:var(--yellow)">● ${a.price!=null?'沿用上次行情':'暫無行情'}｜${esc(quoteAge(ts))}<br>${a.price!=null?'上次成功時間：'+esc(formatTime(ts))+'<br>':''}本次更新失敗：${esc(a.quoteError)}</div>`;
  if(a.price==null)return '<div class="name" style="margin-top:5px;color:var(--muted)">● 尚無行情資料</div>';
  return `<div class="name" style="margin-top:5px;color:${a.quoteStale?'var(--yellow)':'var(--green)'}">● ${a.quoteStale?'沿用快取行情':'行情已取得'}｜${esc(quoteAge(ts))}<br>資料時間：${esc(formatTime(a.priceTime||ts))}</div>`;
@@ -120,20 +121,24 @@ async function fetchQuote(a){
   try{
    const r=await fetch(url,{cache:'no-store',signal:ctl.signal});if(!r.ok)throw new Error('行情服務回應 '+r.status);
    const d=await r.json();if(d?.chart?.error)throw new Error(d.chart.error.description||'行情來源拒絕查詢');
-   const result=d?.chart?.result?.[0],meta=result?.meta,price=Number(meta?.regularMarketPrice);
-   if(!meta||!Number.isFinite(price))throw new Error('來源沒有回傳有效價格');
-   const prev=Number(meta.chartPreviousClose??meta.previousClose??meta.regularMarketPreviousClose);
-   Object.assign(a,{price,change:Number.isFinite(prev)?price-prev:null,changePercent:Number.isFinite(prev)&&prev!==0?(price-prev)/prev*100:null,
-    priceTime:Number(meta.regularMarketTime)||Math.floor(Date.now()/1000),quoteFetchedAt:Math.floor(Date.now()/1000),quoteCurrency:meta.currency||(a.market==='tw'?'TWD':'USD'),
-    dayOpen:Number.isFinite(Number(meta.regularMarketOpen))?Number(meta.regularMarketOpen):null,dayHigh:Number.isFinite(Number(meta.regularMarketDayHigh))?Number(meta.regularMarketDayHigh):null,dayLow:Number.isFinite(Number(meta.regularMarketDayLow))?Number(meta.regularMarketDayLow):null,
-    previousClose:Number.isFinite(Number(meta.chartPreviousClose??meta.previousClose))?Number(meta.chartPreviousClose??meta.previousClose):null,
-    volume:Number.isFinite(Number(meta.regularMarketVolume))?Number(meta.regularMarketVolume):null,averageVolume:Number.isFinite(Number(meta.averageDailyVolume3Month))?Number(meta.averageDailyVolume3Month):null,
-    marketCap:Number.isFinite(Number(meta.marketCap))?Number(meta.marketCap):null,quoteError:null,quoteStale:false});
-   const q=result.indicators?.quote?.[0]||{},closes=q.close||[],highs=q.high||[],lows=q.low||[],valid=[];
+   const result=d?.chart?.result?.[0],meta=result?.meta||{},q=result?.indicators?.quote?.[0]||{},closes=q.close||[],highs=q.high||[],lows=q.low||[],valid=[];
    for(let i=0;i<closes.length;i++)if(closes[i]!==null&&Number.isFinite(Number(closes[i])))valid.push(i);
+   const lastIndex=valid.length?valid[valid.length-1]:-1;
+   let price=meta.regularMarketPrice==null?NaN:Number(meta.regularMarketPrice),historicalFallback=false;
+   // 有些標的會回傳歷史收盤價，卻沒有 regularMarketPrice；此時只顯示最近收盤價並明確標示非即時。
+   if(!Number.isFinite(price)){if(lastIndex>=0){price=Number(closes[lastIndex]);historicalFallback=true}else throw new Error('來源沒有回傳有效價格或歷史收盤價')}
+   let prev=Number(meta.chartPreviousClose??meta.previousClose??meta.regularMarketPreviousClose);
+   if(!Number.isFinite(prev)&&historicalFallback&&valid.length>1)prev=Number(closes[valid[valid.length-2]]);
+   const timestamps=result.timestamp||[];
+   Object.assign(a,{price,change:Number.isFinite(prev)?price-prev:null,changePercent:Number.isFinite(prev)&&prev!==0?(price-prev)/prev*100:null,
+    priceTime:Number(meta.regularMarketTime)||(lastIndex>=0?Number(timestamps[lastIndex]):0)||Math.floor(Date.now()/1000),quoteFetchedAt:Math.floor(Date.now()/1000),quoteCurrency:meta.currency||(a.market==='tw'?'TWD':'USD'),
+    dayOpen:Number.isFinite(Number(meta.regularMarketOpen))?Number(meta.regularMarketOpen):null,dayHigh:Number.isFinite(Number(meta.regularMarketDayHigh))?Number(meta.regularMarketDayHigh):null,dayLow:Number.isFinite(Number(meta.regularMarketDayLow))?Number(meta.regularMarketDayLow):null,
+    previousClose:Number.isFinite(Number(meta.chartPreviousClose??meta.previousClose))?Number(meta.chartPreviousClose??meta.previousClose):(Number.isFinite(prev)?prev:null),
+    volume:Number.isFinite(Number(meta.regularMarketVolume))?Number(meta.regularMarketVolume):null,averageVolume:Number.isFinite(Number(meta.averageDailyVolume3Month))?Number(meta.averageDailyVolume3Month):null,
+    marketCap:Number.isFinite(Number(meta.marketCap))?Number(meta.marketCap):null,quoteError:null,quoteStale:historicalFallback,quoteHistoricalClose:historicalFallback});
    const last60=valid.slice(-60);a.sixtyDayTradingDays=last60.length||null;a.sixtyDayHigh=null;a.sixtyDayLow=null;a.sixtyDayChangePercent=null;a.sixtyDayStartPrice=null;
    if(last60.length){const hi=last60.map(i=>Number(highs[i])).filter(Number.isFinite),lo=last60.map(i=>Number(lows[i])).filter(Number.isFinite),first=Number(closes[last60[0]]),last=Number(closes[last60.at(-1)]);a.sixtyDayHigh=hi.length?Math.max(...hi):null;a.sixtyDayLow=lo.length?Math.min(...lo):null;a.sixtyDayStartPrice=Number.isFinite(first)?first:null;a.sixtyDayChangePercent=Number.isFinite(first)&&first!==0&&Number.isFinite(last)?(last/first-1)*100:null}
-   const cache=readQuoteCache();cache[quoteKey(a)]={price:a.price,change:a.change,changePercent:a.changePercent,priceTime:a.priceTime,quoteFetchedAt:a.quoteFetchedAt,quoteCurrency:a.quoteCurrency,dayOpen:a.dayOpen,dayHigh:a.dayHigh,dayLow:a.dayLow,previousClose:a.previousClose,volume:a.volume,averageVolume:a.averageVolume,sixtyDayHigh:a.sixtyDayHigh,sixtyDayLow:a.sixtyDayLow,sixtyDayChangePercent:a.sixtyDayChangePercent,sixtyDayStartPrice:a.sixtyDayStartPrice,sixtyDayTradingDays:a.sixtyDayTradingDays,marketCap:a.marketCap};
+   const cache=readQuoteCache();cache[quoteKey(a)]={price:a.price,change:a.change,changePercent:a.changePercent,priceTime:a.priceTime,quoteFetchedAt:a.quoteFetchedAt,quoteCurrency:a.quoteCurrency,dayOpen:a.dayOpen,dayHigh:a.dayHigh,dayLow:a.dayLow,previousClose:a.previousClose,volume:a.volume,averageVolume:a.averageVolume,sixtyDayHigh:a.sixtyDayHigh,sixtyDayLow:a.sixtyDayLow,sixtyDayChangePercent:a.sixtyDayChangePercent,sixtyDayStartPrice:a.sixtyDayStartPrice,sixtyDayTradingDays:a.sixtyDayTradingDays,marketCap:a.marketCap,quoteHistoricalClose:a.quoteHistoricalClose};
    writeQuoteCache(cache);return a;
   }catch(e){lastError=e?.name==='AbortError'?'連線逾時':(e?.message||'連線失敗')}finally{clearTimeout(timer)}
  }
@@ -162,7 +167,7 @@ async function showDetail(symbol,market,scroll=true){
  $('detail').innerHTML=`<div class="cardtop"><div><div class="muted">${a.market==='tw'?'台股／台灣 ETF':'美股／美國 ETF'} · ${esc(a.type)} · ${esc(a.exchange||'交易所資訊依資料來源')}</div><h2>${esc(a.name)}（${esc(a.symbol)}）</h2><div class="muted">行情代號：${esc(a.yahoo||a.symbol)}</div></div><button class="btn ${isWatched(a)?'remove':'primary'}" onclick="toggleWatch('${esc(a.symbol)}','${a.market}')">${isWatched(a)?'移出自選':'加入自選追蹤'}</button></div>
  <div class="detailsection"><h3>行情摘要</h3><div class="detailgrid">
  ${metric('最新可用價格',priceText(a),changeHtml(a).replace(/<[^>]*>/g,'').trim())}${metric('行情時間',formatTime(a.priceTime),`本機取得：${a.quoteFetchedAt?formatTime(a.quoteFetchedAt):'尚無'}；${quoteAge(a.quoteFetchedAt||a.priceTime)}`)}
- ${metric('行情狀態',a.quoteError?(a.price!=null?'沿用上次行情':'暫無行情'):(a.price==null?'尚無行情資料':(a.quoteStale?'沿用快取行情':'行情已取得')),a.quoteError||'價格可能延遲，請核對券商行情')}
+ ${metric('行情狀態',a.quoteError?(a.price!=null?'沿用上次行情':'暫無行情'):(a.price==null?'尚無行情資料':(a.quoteHistoricalClose?'最近交易日收盤價（非即時）':(a.quoteStale?'沿用快取行情':'行情已取得'))),a.quoteError||'價格可能延遲，請核對券商行情')}
  ${metric('前一交易日收盤',num(a.previousClose,currency))}${metric('當日開盤',num(a.dayOpen,currency))}${metric('當日最高',num(a.dayHigh,currency))}${metric('當日最低',num(a.dayLow,currency))}
  ${metric('成交量',volume(a.volume))}${metric('平均成交量',volume(a.averageVolume))}${metric('近 60 個交易日最高',num(a.sixtyDayHigh,currency))}${metric('近 60 個交易日最低',num(a.sixtyDayLow,currency))}
  ${metric('近 60 個交易日漲跌幅',a.sixtyDayChangePercent==null?'來源未提供':(a.sixtyDayChangePercent>0?'+':'')+a.sixtyDayChangePercent.toFixed(2)+'%')}${metric('60 日區間起始收盤價',num(a.sixtyDayStartPrice,currency))}${metric('涵蓋交易日數',a.sixtyDayTradingDays==null?'來源未提供':String(a.sixtyDayTradingDays))}${metric('市值',a.marketCap?num(a.marketCap,currency):'來源未提供')}</div></div>
